@@ -1,14 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
-  <meta charset="UTF-8">
-  <title>Instagram Business Login</title>
+    <meta charset="UTF-8">
+    <title>Instagram Monitoring Jadvali</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
+            margin: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #1e293b;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #0f172a;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f1f5f9;
+        }
+        tr:hover {
+            background-color: #e2e8f0;
+        }
+        a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-  <h2>Instagram Business Login</h2>
-  <a href="https://www.instagram.com/accounts/login/?force_authentication&platform_app_id=759830353162193&enable_fb_login&next=https%3A%2F%2Fwww.instagram.com%2Foauth%2Fauthorize%2Fthird_party%2F%3Fredirect_uri%3Dhttps%253A%252F%252Fe90c897709f8.ngrok-free.app%252Fcallback%26response_type%3Dcode%26scope%3Dinstagram_business_basic%252Cinstagram_business_manage_messages%252Cinstagram_business_manage_comments%252Cinstagram_business_content_publish%26client_id%3D759830353162193%26force_reauth%3D0%26logger_id%3D312388bb-4a50-48da-9c14-93ca080dbed9" 
-     style="padding: 12px 24px; background-color: #405DE6; color: white; text-decoration: none; border-radius: 6px;">
-    Login with Instagram
-  </a>
+    <h2>📊 Instagram Monitoring Jadvali</h2>
+    <table id="monitoringTable">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Media ID</th>
+                <th>Post Link</th>
+                <th>Views</th>
+                <th>Reach</th>
+                <th>Shares</th>
+                <th>Saved</th>
+                <th>+ Comments</th>
+                <th>Read DM</th>
+                <th>🛒 Buy Clicks</th>
+                <th>❌ Bosmaganlar</th>
+                <th>📩 Aloqa Clicks</th>
+                <th>CTR (%)</th> <!-- yangi ustun -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in monitoring_data %}
+            <tr>
+                <td>{{ row.num }}</td>
+                <td>{{ row.media_id }}</td>
+                <td><a href="{{ row.media_url }}" target="_blank">Link</a></td>
+                <td>{{ row.views }}</td>
+                <td class="reach">{{ row.reach }}</td>
+                <td>{{ row.shares }}</td>
+                <td>{{ row.saved }}</td>
+                <td>{{ row.plus_comments }}</td>
+                <td class="read_dm">{{ row.read_dm }}</td>
+                <td class="buy_clicks">{{ row.buy_clicks }}</td>
+                <td class="not_clicked">0</td> <!-- JS hisoblab yozadi -->
+                <td>{{ row.aloqa_clicks }}</td>
+                <td class="ctr">0%</td> <!-- JS hisoblab yozadi -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // Jadvalni yurib chiqamiz va "Bosmaganlar" + "CTR (%)" ni hisoblaymiz
+        document.querySelectorAll("#monitoringTable tbody tr").forEach(row => {
+            let read = parseInt(row.querySelector(".read_dm").innerText) || 0;
+            let buy = parseInt(row.querySelector(".buy_clicks").innerText) || 0;
+            let reach = parseInt(row.querySelector(".reach").innerText) || 0;
+
+            // ❌ Bosmaganlar = Read DM - Buy
+            let diff = read - buy;
+            if (diff < 0) diff = 0;
+            row.querySelector(".not_clicked").innerText = diff;
+
+            // CTR (%) = Buy / Reach * 100
+            let ctr = 0;
+            if (reach > 0) {
+                ctr = ((buy / reach) * 100).toFixed(2);
+            }
+            row.querySelector(".ctr").innerText = ctr + "%";
+        });
+    </script>
 </body>
 </html>

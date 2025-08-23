@@ -5,42 +5,43 @@ ACCESS_TOKEN = 'IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTN
 IG_ID = '17841475962377751'  # o'z biznes akkauntingiz IDsi
 IGSID = '1100419184851307'  # sizga DM yozgan userning IDsi
 
-url = f"https://graph.instagram.com/v23.0/{IG_ID}/messenger_profile?access_token={ACCESS_TOKEN}"
+url = f'https://graph.instagram.com/v23.0/{IG_ID}/messages'
 
 headers = {
+    'Authorization': f'Bearer {ACCESS_TOKEN}',
     'Content-Type': 'application/json'
 }
 
 payload = {
-    "platform": "instagram",
-    "ice_breakers": [
-        {
-            "locale": "default",
-            "call_to_actions": [
-                {
-                    "question": "🛍 Nimalar bor?",
-                    "payload": "PRODUCTS"
-                },
-                {
-                    "question": "📦 Buyurtma holati?",
-                    "payload": "ORDER_STATUS"
-                },
-                {
-                    "question": "💬 Yordam kerak",
-                    "payload": "NEED_SUPPORT"
-                },
-                {
-                    "question": "📍 Manzilingiz qayerda?",
-                    "payload": "LOCATION"
-                }
-            ]
+    "recipient": {
+        "id": IGSID
+    },
+    "message": {
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "button",
+                "text": "Sizga qanday yordam bera olishim mumkin?",
+                "buttons": [
+                    {
+                        "type": "web_url",
+                        "url": "https://example.com",
+                        "title": "Saytga o‘tish"
+                    },
+                    {
+                        "type": "postback",
+                        "title": "Yordam kerak",
+                        "payload": "NEED_HELP"
+                    }
+                ]
+            }
         }
-    ]
+    }
 }
 
 response = requests.post(url, headers=headers, data=json.dumps(payload))
 
 if response.status_code == 200:
-    print("✅ Ice Breakers muvaffaqiyatli o‘rnatildi:", response.json())
+    print("✅ Button template yuborildi:", response.json())
 else:
-    print("❌ Xatolik:", response.status_code, response.text)
+    print("❌ Xato:", response.status_code, response.text)

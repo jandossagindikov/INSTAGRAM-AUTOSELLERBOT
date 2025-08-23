@@ -1,14 +1,33 @@
-from fastapi import FastAPI, Request
-import uvicorn
-import json
+import requests
 
-app = FastAPI()
+# Instagram Graph API ma’lumotlari
+ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"   # <-- o'zingizning access tokeningizni yozasiz
+MEDIA_ID = "18137348917428416"   # <-- kerakli media ID (post/reels/story)
 
-@app.post("/webhook")
-async def instagram_webhook(request: Request):
-    payload = await request.json()
-    print("Yangi trigger keldi:", json.dumps(payload, indent=2))
-    return {"status": "OK"}
+def get_media_insights(media_id, access_token):
+    """
+    Instagram Media Insights API orqali faqat views, reach, saved, shares olish
+    """
+    url = f"https://graph.instagram.com/v23.0/{media_id}/insights"
+    params = {
+        "metric": "views,reach,saved,shares",
+        "access_token": access_token
+    }
 
-# Bu qismni terminaldan ishga tushirasan, VSCode ichida emas
-# Terminalda: uvicorn main:app --reload
+    response = requests.get(url, params=params)
+
+    if response.status_code == 200:
+        data = response.json().get("data", [])
+        # Qulay formatga o‘tkazamiz
+        insights = {item["name"]: item["values"][0]["value"] for item in data}
+        return insights
+    else:
+        print("❌ API xato:", response.text)
+        return {}
+
+# Test qilish
+if __name__ == "__main__":
+    result = get_media_insights(MEDIA_ID, ACCESS_TOKEN)
+    print("📊 Media Insights natijasi:")
+    for metric, value in result.items():
+        print(f"{metric}: {value}")
