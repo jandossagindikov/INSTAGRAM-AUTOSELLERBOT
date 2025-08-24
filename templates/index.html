@@ -29,6 +29,8 @@
         th {
             background-color: #0f172a;
             color: white;
+            position: relative;
+            vertical-align: middle;
         }
         tr:nth-child(even) {
             background-color: #f1f5f9;
@@ -44,6 +46,36 @@
         a:hover {
             text-decoration: underline;
         }
+        /* Sort tugmalari */
+        .sort-controls {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .sort-btn {
+            border: 1px solid rgba(255,255,255,0.35);
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            font-weight: 700;
+            line-height: 1;
+            border-radius: 4px;
+            padding: 0 4px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 12px;
+        }
+        .sort-btn:hover { background: rgba(255,255,255,0.22); }
+        .sort-btn:active { transform: translateY(1px); }
+        .sorted-desc::after, .sorted-asc::after {
+            content: "";
+            display: inline-block;
+            width: 6px; height: 6px;
+            margin-left: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
     </style>
 </head>
 <body>
@@ -54,16 +86,66 @@
                 <th>№</th>
                 <th>Media ID</th>
                 <th>Post Link</th>
-                <th>Views</th>
-                <th>Reach</th>
-                <th>Shares</th>
-                <th>Saved</th>
-                <th>+ Comments</th>
-                <th>Read DM</th>
-                <th>🛒 Buy Clicks</th>
-                <th>❌ Bosmaganlar</th>
-                <th>📩 Aloqa Clicks</th>
-                <th>CTR (%)</th> <!-- yangi ustun -->
+                <th data-sortable="num">Views
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
+                <th data-sortable="num">Reach
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
+                <th data-sortable="num">Shares
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
+                <th data-sortable="num">Saved
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
+                <th data-sortable="num">+ Comments
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
+                <th data-sortable="num">Read DM
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
+                <th data-sortable="num">🛒 Buy Clicks
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
+                <th data-sortable="num">❌ Bosmaganlar
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
+                <th data-sortable="num">📩 Aloqa Clicks
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
+                <th data-sortable="percent">CTR (%)
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -79,33 +161,89 @@
                 <td>{{ row.plus_comments }}</td>
                 <td class="read_dm">{{ row.read_dm }}</td>
                 <td class="buy_clicks">{{ row.buy_clicks }}</td>
-                <td class="not_clicked">0</td> <!-- JS hisoblab yozadi -->
+                <td class="not_clicked">0</td>
                 <td>{{ row.aloqa_clicks }}</td>
-                <td class="ctr">0%</td> <!-- JS hisoblab yozadi -->
+                <td class="ctr">0%</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
     <script>
-        // Jadvalni yurib chiqamiz va "Bosmaganlar" + "CTR (%)" ni hisoblaymiz
-        document.querySelectorAll("#monitoringTable tbody tr").forEach(row => {
-            let read = parseInt(row.querySelector(".read_dm").innerText) || 0;
-            let buy = parseInt(row.querySelector(".buy_clicks").innerText) || 0;
-            let reach = parseInt(row.querySelector(".reach").innerText) || 0;
+        function parseNumber(text) {
+            const cleaned = (text || "").toString().replace(/[^0-9.\-]/g, "");
+            const val = parseFloat(cleaned);
+            return isNaN(val) ? 0 : val;
+        }
 
-            // ❌ Bosmaganlar = Read DM - Buy
-            let diff = read - buy;
-            if (diff < 0) diff = 0;
-            row.querySelector(".not_clicked").innerText = diff;
+        function computeDerivedColumns() {
+            document.querySelectorAll("#monitoringTable tbody tr").forEach(row => {
+                let read = parseNumber(row.querySelector(".read_dm")?.innerText);
+                let buy = parseNumber(row.querySelector(".buy_clicks")?.innerText);
+                let reach = parseNumber(row.querySelector(".reach")?.innerText);
 
-            // CTR (%) = Buy / Reach * 100
-            let ctr = 0;
-            if (reach > 0) {
-                ctr = ((buy / reach) * 100).toFixed(2);
-            }
-            row.querySelector(".ctr").innerText = ctr + "%";
-        });
+                let diff = read - buy;
+                if (diff < 0) diff = 0;
+                row.querySelector(".not_clicked").innerText = diff.toString();
+
+                let ctr = 0;
+                if (reach > 0) {
+                    ctr = (buy / reach) * 100;
+                }
+                row.querySelector(".ctr").innerText = ctr.toFixed(2) + "%";
+            });
+        }
+
+        function sortTableByColumn(colIndex, direction, type) {
+            const table = document.getElementById("monitoringTable");
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+
+            const multiplier = direction === 'asc' ? 1 : -1;
+
+            const sorted = rows.sort((a, b) => {
+                const aText = a.children[colIndex]?.innerText || "";
+                const bText = b.children[colIndex]?.innerText || "";
+                let aVal, bVal;
+                if (type === 'percent' || type === 'num') {
+                    aVal = parseNumber(aText);
+                    bVal = parseNumber(bText);
+                } else {
+                    aVal = aText.toLowerCase();
+                    bVal = bText.toLowerCase();
+                    return aVal.localeCompare(bVal) * multiplier;
+                }
+                if (aVal === bVal) return 0;
+                return (aVal > bVal ? 1 : -1) * multiplier;
+            });
+
+            sorted.forEach(tr => tbody.appendChild(tr));
+        }
+
+        function setupSorting() {
+            const headerRow = document.querySelector("#monitoringTable thead tr");
+            const ths = Array.from(headerRow.children);
+
+            ths.forEach((th, index) => {
+                const sortableType = th.getAttribute('data-sortable');
+                if (!sortableType) return;
+
+                const controls = th.querySelectorAll('.sort-btn');
+                controls.forEach(btn => {
+                    const dir = btn.dataset.dir;
+                    btn.addEventListener('click', () => {
+                        headerRow.querySelectorAll('.sorted-asc, .sorted-desc').forEach(el => {
+                            el.classList.remove('sorted-asc', 'sorted-desc');
+                        });
+                        th.classList.add(dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                        sortTableByColumn(index, dir, sortableType);
+                    });
+                });
+            });
+        }
+
+        computeDerivedColumns();
+        setupSorting();
     </script>
 </body>
 </html>
