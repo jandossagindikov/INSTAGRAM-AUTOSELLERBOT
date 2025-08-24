@@ -10,14 +10,16 @@ app = Flask(__name__)
 
 # --- Config ---
 VERIFY_TOKEN = "myverifytoken123"
-TOKEN_EXPIRES_AT = time.time() + 60*24*3600
 APP_USERS_IG_ID = "17841475962377751"
 API_VERSION = "v23.0"
 API_BASE = "https://graph.instagram.com"
 admin_telegram = "https://t.me/sagindikov_04"
 
 # === PostgreSQL ulanish ===
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://jandos:aATLbHClH7wNgMZchjaWv2dbMBLVZtB4@dpg-d2kp8jjipnbc73fdf6sg-a/sellerlist")
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://jandos:DMgvx8yeBT2OcAsrYUgMCTpan68LPo4x@dpg-d2ljl5h5pdvs73aqbqp0-a.frankfurt-postgres.render.com/monitoringlist"
+)
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
@@ -41,7 +43,6 @@ def init_db():
         media_id TEXT
     );
     """)
-    # yangi token jadvalli
     cur.execute("""
     CREATE TABLE IF NOT EXISTS access_tokens (
         id SERIAL PRIMARY KEY,
@@ -74,15 +75,6 @@ def load_access_token():
     if row:
         return row["token"], row["expires_at"]
     return None, 0
-
-# dastur ishga tushganda oxirgi tokenni yuklash
-ACCESS_TOKEN, TOKEN_EXPIRES_AT = load_access_token()
-
-if not ACCESS_TOKEN:
-    ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"
-    # ACCESS_TOKEN = "SIZNING_BOSHLANGICH_LONG_LIVED_TOKENINGIZ"  # <-- o‘zingiz qo‘yasiz
-    TOKEN_EXPIRES_AT = int(time.time()) + 60*24*3600
-    save_access_token(ACCESS_TOKEN, TOKEN_EXPIRES_AT)
 
 # === Mahsulotlar ro‘yxati ===
 products = [
@@ -156,9 +148,8 @@ def get_mapping(mid):
     return row["media_id"] if row else None
 
 # === Instagram helpers ===
-# === Instagram helpers ===
 def get_media_insights(media_id, access_token):
-    url = f"{API_BASE}/v23.0/{media_id}/insights"
+    url = f"{API_BASE}/{API_VERSION}/{media_id}/insights"
     params = {"metric": "views,reach,saved,shares", "access_token": access_token}
     r = requests.get(url, params=params)
     if r.status_code == 200:
@@ -290,6 +281,17 @@ def send_private_reply(comment_id, product, media_id, access_token):
         if mid:
             set_mapping(mid, media_id)
 
+# === Main ===
 if __name__ == '__main__':
     init_db()
+
+    # Tokenni bazadan yuklaymiz
+    ACCESS_TOKEN, TOKEN_EXPIRES_AT = load_access_token()
+
+    # Agar token yo‘q bo‘lsa, boshlang‘ich tokenni qo‘yamiz
+    if not ACCESS_TOKEN:
+        ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"
+        TOKEN_EXPIRES_AT = int(time.time()) + 60*24*3600
+        save_access_token(ACCESS_TOKEN, TOKEN_EXPIRES_AT)
+
     app.run(port=5000, debug=True)
