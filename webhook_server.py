@@ -14,11 +14,14 @@ APP_USERS_IG_ID = "17841475962377751"
 API_VERSION = "v23.0"
 API_BASE = "https://graph.instagram.com"
 admin_telegram = "https://t.me/sagindikov_04"
+# === Global tokenlar ===
+ACCESS_TOKEN = None
+TOKEN_EXPIRES_AT = 0
 
 # === PostgreSQL ulanish ===
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://jandos:DMgvx8yeBT2OcAsrYUgMCTpan68LPo4x@dpg-d2ljl5h5pdvs73aqbqp0-a/monitoringlist"
+    "postgresql://jandos:DMgvx8yeBT2OcAsrYUgMCTpan68LPo4x@dpg-d2ljl5h5pdvs73aqbqp0-a.frankfurt-postgres.render.com/monitoringlist"
 )
 
 def get_db_connection():
@@ -281,6 +284,7 @@ def send_private_reply(comment_id, product, media_id, access_token):
         if mid:
             set_mapping(mid, media_id)
 
+# === Main ===
 # === Main ===
 if __name__ == '__main__':
     # Avval DB jadvallarini yaratamiz
