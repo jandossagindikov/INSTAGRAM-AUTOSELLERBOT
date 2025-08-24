@@ -5,6 +5,7 @@ import os
 import time
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from products import products
 
 app = Flask(__name__)
 
@@ -47,22 +48,22 @@ def init_db():
     conn.close()
 
 # === Mahsulotlar ro‘yxati ===
-products = [
-    {
-        "media_id": "17991437924683241",
-        "media_url": "https://www.instagram.com/reel/DNNj6RSP7_t/",
-        "buy_link": "https://uzum.uz/uz/product/rasshiritel-dlya-nosa-oq---5-1660905?skuId=5662019",
-        "image_url": "https://images.uzum.uz/d0e434i7s4fo7mq89ujg/original.jpg",
-        "title": "Burun kengaytirgich"
-    },
-    {
-        "media_id": "18137348917428416",
-        "media_url": "https://www.instagram.com/p/DNlU4nwqe39/?img_index=1",
-        "buy_link": "https://uzum.uz/uz/product/windows-ornatilgan-ofis-metall-kulrang---291-1694031?skuId=5780830",
-        "image_url": "https://images.uzum.uz/d24ccst2lln1ps3bs800/original.jpg",
-        "title": "iTech noutbuki"
-    }
-]
+# products = [
+#     {
+#         "media_id": "17991437924683241",
+#         "media_url": "https://www.instagram.com/reel/DNNj6RSP7_t/",
+#         "buy_link": "https://uzum.uz/uz/product/rasshiritel-dlya-nosa-oq---5-1660905?skuId=5662019",
+#         "image_url": "https://images.uzum.uz/d0e434i7s4fo7mq89ujg/original.jpg",
+#         "title": "Burun kengaytirgich"
+#     },
+#     {
+#         "media_id": "18137348917428416",
+#         "media_url": "https://www.instagram.com/p/DNlU4nwqe39/?img_index=1",
+#         "buy_link": "https://uzum.uz/uz/product/windows-ornatilgan-ofis-metall-kulrang---291-1694031?skuId=5780830",
+#         "image_url": "https://images.uzum.uz/d24ccst2lln1ps3bs800/original.jpg",
+#         "title": "iTech noutbuki"
+#     }
+# ]
 
 # === Helper: productni media_id orqali topish ===
 def get_product_by_media_id(media_id):
