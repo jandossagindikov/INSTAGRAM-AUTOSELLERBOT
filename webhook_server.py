@@ -18,7 +18,7 @@ API_BASE = "https://graph.instagram.com"
 admin_telegram = "https://t.me/sagindikov_04"
 
 # === PostgreSQL ulanish ===
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://jandos:aATLbHClH7wNgMZchjaWv2dbMBLVZtB4@dpg-d2kp8jjipnbc73fdf6sg-a.frankfurt-postgres.render.com/sellerlist")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://jandos:aATLbHClH7wNgMZchjaWv2dbMBLVZtB4@dpg-d2kp8jjipnbc73fdf6sg-a/sellerlist")
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
