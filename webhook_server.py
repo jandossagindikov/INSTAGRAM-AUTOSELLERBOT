@@ -10,20 +10,15 @@ app = Flask(__name__)
 
 # --- Config ---
 VERIFY_TOKEN = "myverifytoken123"
+ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"
+TOKEN_EXPIRES_AT = time.time() + 60*24*3600
 APP_USERS_IG_ID = "17841475962377751"
 API_VERSION = "v23.0"
 API_BASE = "https://graph.instagram.com"
 admin_telegram = "https://t.me/sagindikov_04"
 
-# === Global tokenlar ===
-ACCESS_TOKEN = None
-TOKEN_EXPIRES_AT = 0
-
 # === PostgreSQL ulanish ===
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://jandos:DMgvx8yeBT2OcAsrYUgMCTpan68LPo4x@dpg-d2ljl5h5pdvs73aqbqp0-a.frankfurt-postgres.render.com/monitoringlist"
-)
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://jandos:DMgvx8yeBT2OcAsrYUgMCTpan68LPo4x@dpg-d2ljl5h5pdvs73aqbqp0-a.frankfurt-postgres.render.com/monitoringlist")
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
@@ -47,38 +42,9 @@ def init_db():
         media_id TEXT
     );
     """)
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS access_tokens (
-        id SERIAL PRIMARY KEY,
-        token TEXT NOT NULL,
-        expires_at BIGINT
-    );
-    """)
     conn.commit()
     cur.close()
     conn.close()
-
-# === Access token DB helpers ===
-def save_access_token(new_token, expires_at):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM access_tokens;")  # faqat 1ta token saqlanadi
-    cur.execute("INSERT INTO access_tokens (token, expires_at) VALUES (%s, %s);",
-                (new_token, int(expires_at)))
-    conn.commit()
-    cur.close()
-    conn.close()
-
-def load_access_token():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT token, expires_at FROM access_tokens ORDER BY id DESC LIMIT 1;")
-    row = cur.fetchone()
-    cur.close()
-    conn.close()
-    if row:
-        return row["token"], row["expires_at"]
-    return None, 0
 
 # === Mahsulotlar ro‘yxati ===
 products = [
@@ -153,7 +119,7 @@ def get_mapping(mid):
 
 # === Instagram helpers ===
 def get_media_insights(media_id, access_token):
-    url = f"{API_BASE}/{API_VERSION}/{media_id}/insights"
+    url = f"{API_BASE}/v23.0/{media_id}/insights"
     params = {"metric": "views,reach,saved,shares", "access_token": access_token}
     r = requests.get(url, params=params)
     if r.status_code == 200:
@@ -173,10 +139,7 @@ def refresh_long_lived_token(current_token):
 def get_access_token():
     global ACCESS_TOKEN, TOKEN_EXPIRES_AT
     if time.time() > TOKEN_EXPIRES_AT - 24*3600:
-        new_token, new_exp = refresh_long_lived_token(ACCESS_TOKEN)
-        if new_token and new_exp:
-            ACCESS_TOKEN, TOKEN_EXPIRES_AT = new_token, new_exp
-            save_access_token(ACCESS_TOKEN, TOKEN_EXPIRES_AT)
+        ACCESS_TOKEN, TOKEN_EXPIRES_AT = refresh_long_lived_token(ACCESS_TOKEN)
     return ACCESS_TOKEN
 
 def get_base_domain():
@@ -285,17 +248,6 @@ def send_private_reply(comment_id, product, media_id, access_token):
         if mid:
             set_mapping(mid, media_id)
 
-# === App init (Render uchun muhim!) ===
-@app.before_first_request
-def setup_app():
-    global ACCESS_TOKEN, TOKEN_EXPIRES_AT
-    init_db()
-    ACCESS_TOKEN, TOKEN_EXPIRES_AT = load_access_token()
-    if not ACCESS_TOKEN:
-        ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"
-        TOKEN_EXPIRES_AT = int(time.time()) + 60*24*3600
-        save_access_token(ACCESS_TOKEN, TOKEN_EXPIRES_AT)
-
-# === Main ===
 if __name__ == '__main__':
+    init_db()
     app.run(port=5000, debug=True)
