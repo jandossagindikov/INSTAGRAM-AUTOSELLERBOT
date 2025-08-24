@@ -18,7 +18,7 @@ admin_telegram = "https://t.me/sagindikov_04"
 # === PostgreSQL ulanish ===
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://jandos:DMgvx8yeBT2OcAsrYUgMCTpan68LPo4x@dpg-d2ljl5h5pdvs73aqbqp0-a.frankfurt-postgres.render.com/monitoringlist"
+    "postgresql://jandos:DMgvx8yeBT2OcAsrYUgMCTpan68LPo4x@dpg-d2ljl5h5pdvs73aqbqp0-a/monitoringlist"
 )
 
 def get_db_connection():
@@ -283,15 +283,17 @@ def send_private_reply(comment_id, product, media_id, access_token):
 
 # === Main ===
 if __name__ == '__main__':
+    # Avval DB jadvallarini yaratamiz
     init_db()
 
-    # Tokenni bazadan yuklaymiz
+    # Keyin access tokenni yuklaymiz
     ACCESS_TOKEN, TOKEN_EXPIRES_AT = load_access_token()
 
-    # Agar token yo‘q bo‘lsa, boshlang‘ich tokenni qo‘yamiz
+    # Agar token mavjud bo‘lmasa, default token qo‘yib yuboramiz
     if not ACCESS_TOKEN:
         ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"
         TOKEN_EXPIRES_AT = int(time.time()) + 60*24*3600
         save_access_token(ACCESS_TOKEN, TOKEN_EXPIRES_AT)
 
+    # Flask serverni ishga tushiramiz
     app.run(port=5000, debug=True)
