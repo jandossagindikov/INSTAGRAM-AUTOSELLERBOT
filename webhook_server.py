@@ -14,6 +14,7 @@ APP_USERS_IG_ID = "17841475962377751"
 API_VERSION = "v23.0"
 API_BASE = "https://graph.instagram.com"
 admin_telegram = "https://t.me/sagindikov_04"
+
 # === Global tokenlar ===
 ACCESS_TOKEN = None
 TOKEN_EXPIRES_AT = 0
@@ -284,20 +285,17 @@ def send_private_reply(comment_id, product, media_id, access_token):
         if mid:
             set_mapping(mid, media_id)
 
-# === Main ===
-# === Main ===
-if __name__ == '__main__':
-    # Avval DB jadvallarini yaratamiz
+# === App init (Render uchun muhim!) ===
+@app.before_first_request
+def setup_app():
+    global ACCESS_TOKEN, TOKEN_EXPIRES_AT
     init_db()
-
-    # Keyin access tokenni yuklaymiz
     ACCESS_TOKEN, TOKEN_EXPIRES_AT = load_access_token()
-
-    # Agar token mavjud bo‘lmasa, default token qo‘yib yuboramiz
     if not ACCESS_TOKEN:
         ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"
         TOKEN_EXPIRES_AT = int(time.time()) + 60*24*3600
         save_access_token(ACCESS_TOKEN, TOKEN_EXPIRES_AT)
 
-    # Flask serverni ishga tushiramiz
+# === Main ===
+if __name__ == '__main__':
     app.run(port=5000, debug=True)
