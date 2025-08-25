@@ -175,13 +175,35 @@ def monitoring():
 # === Click tracking ===
 @app.route('/click/<action>/<media_id>')
 def track_click(action, media_id):
+    product = get_product_by_media_id(media_id)
+    if not product:
+        return "Not found", 404
+
     if action == "buy":
         increment_count(media_id, "buy_clicks")
-        return redirect(get_product_by_media_id(media_id)["buy_link"])
+
+        # Uzum web linkdan product_id ni ajratib olish
+        # Masalan: https://uzum.uz/product/1660905?utm_source=...
+        product_url = product["buy_link"]
+        product_id = None
+        if "product/" in product_url:
+            product_id = product_url.split("product/")[1].split("?")[0]
+
+        # User-Agent orqali aniqlash
+        ua = request.headers.get("User-Agent", "").lower()
+        if product_id and ("android" in ua or "iphone" in ua):
+            # Deep link orqali app ochiladi
+            return redirect(f"uzum://product/{product_id}")
+        else:
+            # Desktop yoki app yo'q bo'lsa, oddiy web link
+            return redirect(product_url)
+
     elif action == "contact":
         increment_count(media_id, "contact_clicks")
         return redirect(admin_telegram)
+
     return "Not found", 404
+
 
 # === Webhook ===
 @app.route('/webhook', methods=['GET','POST'])
