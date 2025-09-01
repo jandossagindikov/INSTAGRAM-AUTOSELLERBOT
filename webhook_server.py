@@ -16,7 +16,7 @@ TOKEN_EXPIRES_AT = time.time() + 60*24*3600
 APP_USERS_IG_ID = "17841475962377751"
 API_VERSION = "v23.0"
 API_BASE = "https://graph.instagram.com"
-admin_telegram = "https://t.me/sagindikov_04"
+admin_telegram = "https://t.me/shopwithuzummarket"
 
 # === PostgreSQL ulanish ===
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://jandos:DMgvx8yeBT2OcAsrYUgMCTpan68LPo4x@dpg-d2ljl5h5pdvs73aqbqp0-a.frankfurt-postgres.render.com/monitoringlist")
@@ -226,12 +226,13 @@ def webhook():
                 comment_id = comment_data["id"]
                 comment_text = comment_data["text"].strip()
                 media_id = comment_data["media"]["id"]
-                if comment_text == "+":
+                if comment_text and set(comment_text) == {"+"}:
                     increment_count(media_id, "plus_count")
                     product = get_product_by_media_id(media_id)
                     if product:
                         reply_to_comment(comment_id, "Directni tekshiring 👀", token)
                         send_private_reply(comment_id, product, media_id, token)
+
         for msg in entry.get("messaging", []):
             if "read" in msg:
                 mid = msg["read"]["mid"]
