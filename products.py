@@ -8,7 +8,7 @@ products = [
         "title": "Burun kengaytirgich"
     },
     {
-        "media_id": "18048886859299673",
+        "media_id": "18050406764627625",
         "media_url": "https://www.instagram.com/p/DOEPQu9im04/",
         "buy_link": "https://uzum.uz/product/1163247?utm_source=sharing&utm_medium=product_page_android&utm_campaign=native",
         "image_url": "https://images.uzum.uz/cqht46ksslomdvnib6q0/original.jpg",
