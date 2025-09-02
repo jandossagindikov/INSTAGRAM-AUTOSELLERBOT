@@ -14,5 +14,13 @@ products = [
         "image_url": "https://images.uzum.uz/cqht46ksslomdvnib6q0/original.jpg",
         "title": "Tungi chiroq porlayotgan oy"
         # 2025.09.1  
+    },
+    {
+        "media_id": "18089648455759759",
+        "media_url": "https://www.instagram.com/reel/DN06BxJwJnV/",
+        "buy_link": "https://uzum.uz/product/1884673?utm_source=sharing&utm_medium=product_page_android&utm_campaign=native",
+        "image_url": "https://images.uzum.uz/d2dp9o34eu2mnqe5hm70/original.jpg",
+        "title": "Sabzavot tozalag'ich"
+        # 2025.09.2  
     }
 ]
