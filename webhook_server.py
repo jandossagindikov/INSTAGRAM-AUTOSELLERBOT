@@ -6,6 +6,7 @@ import time
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from products import products
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -127,6 +128,16 @@ def get_media_insights(media_id, access_token):
         data = r.json().get("data", [])
         return {item["name"]: item["values"][0]["value"] for item in data}
     return {}
+def get_media_info(media_id, access_token):
+    url = f"{API_BASE}/{API_VERSION}/{media_id}"
+    params = {
+        "fields": "id,media_type,media_url,timestamp",
+        "access_token": access_token
+    }
+    r = requests.get(url, params=params)
+    if r.status_code == 200:
+        return r.json()
+    return {}
 
 def refresh_long_lived_token(current_token):
     url = f"{API_BASE}/refresh_access_token"
@@ -157,6 +168,16 @@ def monitoring():
     for idx, product in enumerate(products, start=1):
         insights = get_media_insights(product["media_id"], token)
         counts = get_counts(product["media_id"])
+        media_info = get_media_info(product["media_id"], token)
+
+        # timestamp formatlash
+        raw_time = media_info.get("timestamp")
+        if raw_time:
+            dt = datetime.strptime(raw_time, "%Y-%m-%dT%H:%M:%S%z")
+            formatted_time = dt.strftime("%Y-%m-%d %H:%M")
+        else:
+            formatted_time = "-"
+
         monitoring_data.append({
             "num": idx,
             "media_id": product["media_id"],
@@ -168,9 +189,11 @@ def monitoring():
             "plus_comments": counts["plus_count"],
             "read_dm": counts["read_count"],
             "buy_clicks": counts["buy_clicks"],
-            "aloqa_clicks": counts["contact_clicks"]
+            "aloqa_clicks": counts["contact_clicks"],
+            "timestamp": formatted_time   # ✅ Formatlangan sana
         })
     return render_template("index.html", monitoring_data=monitoring_data)
+
 
 # === Click tracking ===
 @app.route('/click/<action>/<media_id>')

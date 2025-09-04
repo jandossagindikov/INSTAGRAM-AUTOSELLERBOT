@@ -146,6 +146,12 @@
                         <button class="sort-btn" data-dir="asc">▼</button>
                     </span>
                 </th>
+                <th data-sortable="num">Postning sanasi 
+                    <span class="sort-controls">
+                        <button class="sort-btn" data-dir="desc">▲</button>
+                        <button class="sort-btn" data-dir="asc">▼</button>
+                    </span>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -164,6 +170,7 @@
                 <td class="not_clicked">0</td>
                 <td>{{ row.aloqa_clicks }}</td>
                 <td class="ctr">0%</td>
+                <td>{{ row.timestamp }}</td>
             </tr>
             {% endfor %}
         </tbody>

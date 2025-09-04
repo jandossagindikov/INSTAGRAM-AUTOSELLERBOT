@@ -6,22 +6,22 @@ IG_USER_ID = "17841475962377751"
 ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"
 
 
-def check_long_lived_token():
-    """Long-lived token muddati qancha qolganini chiqarish"""
-    url = "https://graph.instagram.com/refresh_access_token"
-    params = {
-        "grant_type": "ig_refresh_token",
-        "access_token": ACCESS_TOKEN
-    }
-    response = requests.get(url, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        expires_in = data.get("expires_in")  # sekundlarda
-        expiry_date = datetime.now() + timedelta(seconds=expires_in)
-        print(f"⏳ Token tugash sanasi: {expiry_date}")
-        print(f"📌 Qolgan vaqt: {expires_in // 86400} kun {(expires_in % 86400) // 3600} soat")
-    else:
-        print("❌ Tokenni tekshirishda xatolik:", response.status_code, response.text)
+# def check_long_lived_token():
+#     """Long-lived token muddati qancha qolganini chiqarish"""
+#     url = "https://graph.instagram.com/refresh_access_token"
+#     params = {
+#         "grant_type": "ig_refresh_token",
+#         "access_token": ACCESS_TOKEN
+#     }
+#     response = requests.get(url, params=params)
+#     if response.status_code == 200:
+#         data = response.json()
+#         expires_in = data.get("expires_in")  # sekundlarda
+#         expiry_date = datetime.now() + timedelta(seconds=expires_in)
+#         print(f"⏳ Token tugash sanasi: {expiry_date}")
+#         print(f"📌 Qolgan vaqt: {expires_in // 86400} kun {(expires_in % 86400) // 3600} soat")
+#     else:
+#         print("❌ Tokenni tekshirishda xatolik:", response.status_code, response.text)
 
 
 def get_media_ids():
@@ -48,5 +48,5 @@ def get_media_ids():
 
 
 if __name__ == "__main__":
-    check_long_lived_token()
+    # check_long_lived_token()
     get_media_ids()
