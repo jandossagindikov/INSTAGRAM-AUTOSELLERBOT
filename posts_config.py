@@ -9,7 +9,7 @@ API_VERSION = "v23.0"
 HOST_URL = "https://graph.instagram.com"  # Siz so‘ragan host
 
 # Webhookdan keladigan qiymatlar
-COMMENT_ID = "18069875366138879"  # Foydalanuvchi kommenti ID
+COMMENT_ID = "18091352044742001"  # Foydalanuvchi kommenti ID
 
 def send_private_reply_generic(comment_id):
     """

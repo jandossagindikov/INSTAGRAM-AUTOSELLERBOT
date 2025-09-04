@@ -1,17 +1,33 @@
 import requests
-from datetime import timedelta
 
-ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"
+# Instagram Graph API ma’lumotlari
+ACCESS_TOKEN = "IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3"   # <-- o'zingizning access tokeningizni yozasiz
+MEDIA_ID = "17969407511952944"   # <-- kerakli media ID (post/reels/story)
 
-url = f"https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token={ACCESS_TOKEN}"
-res = requests.get(url).json()
+def get_media_insights(media_id, access_token):
+    """
+    Instagram Media Insights API orqali faqat views, reach, saved, shares olish
+    """
+    url = f"https://graph.instagram.com/v23.0/{media_id}/insights"
+    params = {
+        "metric": "views,reach,saved,shares",
+        "access_token": access_token
+    }
 
-print(res)
+    response = requests.get(url, params=params)
 
-if "access_token" in res and "expires_in" in res:
-    expires_in = res["expires_in"]  # soniyada
-    days = expires_in // 86400
-    hours = (expires_in % 86400) // 3600
-    print(f"Qolgan muddat: {days} kun {hours} soat")
-else:
-    print("Xatolik yoki noto‘g‘ri token:", res)
+    if response.status_code == 200:
+        data = response.json().get("data", [])
+        # Qulay formatga o‘tkazamiz
+        insights = {item["name"]: item["values"][0]["value"] for item in data}
+        return insights
+    else:
+        print("❌ API xato:", response.text)
+        return {}
+
+# Test qilish
+if __name__ == "__main__":
+    result = get_media_insights(MEDIA_ID, ACCESS_TOKEN)
+    print("📊 Media Insights natijasi:")
+    for metric, value in result.items():
+        print(f"{metric}: {value}")

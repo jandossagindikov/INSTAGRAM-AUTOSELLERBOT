@@ -248,7 +248,17 @@ def webhook():
                 comment_data = change["value"]
                 comment_id = comment_data["id"]
                 comment_text = comment_data["text"].strip()
-                media_id = comment_data["media"]["id"]
+
+                media_info = comment_data.get("media", {})
+                media_type = media_info.get("media_product_type", "")
+                
+                # 1-event (AD) bo‘lsa original_media_id ishlatamiz
+                if media_type == "AD":
+                    media_id = media_info.get("original_media_id")
+                else:
+                    media_id = media_info.get("id")
+
+                # faqat "+" belgilaridan iborat kommentni tekshirish
                 if comment_text and set(comment_text) == {"+"}:
                     increment_count(media_id, "plus_count")
                     product = get_product_by_media_id(media_id)
@@ -256,15 +266,18 @@ def webhook():
                         reply_to_comment(comment_id, "Directni tekshiring 👀", token)
                         send_private_reply(comment_id, product, media_id, token)
 
+        # DM read eventlari uchun
         for msg in entry.get("messaging", []):
             if "read" in msg:
                 mid = msg["read"]["mid"]
                 media_id = get_mapping(mid)
                 if media_id:
                     increment_count(media_id, "read_count")
+
     except Exception as e:
         print("❌ Webhook error:", e)
     return "OK", 200
+
 
 def reply_to_comment(comment_id, message, access_token):
     url = f"{API_BASE}/{comment_id}/replies"

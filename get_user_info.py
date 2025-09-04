@@ -1,47 +1,38 @@
-import requests
-import json
+from flask import Flask, request
 
-ACCESS_TOKEN = 'IGAAKzD8pKL9FBZAE1YdUlDRms5NjZADNDhfdktIbGFZARHR4cnVKWEhRRlNQWTNXS1pFNGpqMThaMkUxelFRRURncUI0ZAjA1WGU3ajdOcjM1em1RQ1RYMXZAZAQ2NsdUJrU3pLZAzBMNVltWDNKVGlYYUtjekV3'
-IG_ID = '17841475962377751'  # o'z biznes akkauntingiz IDsi
-IGSID = '1100419184851307'  # sizga DM yozgan userning IDsi
+app = Flask(__name__)
 
-url = f'https://graph.instagram.com/v23.0/{IG_ID}/messages'
+VERIFY_TOKEN = "my_verify_token"
 
-headers = {
-    'Authorization': f'Bearer {ACCESS_TOKEN}',
-    'Content-Type': 'application/json'
-}
+# 1. Verification endpoint
+@app.route("/webhook", methods=["GET"])
+def verify():
+    mode = request.args.get("hub.mode")
+    token = request.args.get("hub.verify_token")
+    challenge = request.args.get("hub.challenge")
 
-payload = {
-    "recipient": {
-        "id": IGSID
-    },
-    "message": {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "button",
-                "text": "Sizga qanday yordam bera olishim mumkin?",
-                "buttons": [
-                    {
-                        "type": "web_url",
-                        "url": "https://example.com",
-                        "title": "Saytga o‘tish"
-                    },
-                    {
-                        "type": "postback",
-                        "title": "Yordam kerak",
-                        "payload": "NEED_HELP"
-                    }
-                ]
-            }
-        }
-    }
-}
+    if mode and token:
+        if mode == "subscribe" and token == VERIFY_TOKEN:
+            return challenge, 200
+        else:
+            return "Forbidden", 403
+    return "Error", 400
 
-response = requests.post(url, headers=headers, data=json.dumps(payload))
+# 2. Messages/Comments listener
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    data = request.get_json()
+    print("📩 New Event:", data, flush=True)
 
-if response.status_code == 200:
-    print("✅ Button template yuborildi:", response.json())
-else:
-    print("❌ Xato:", response.status_code, response.text)
+    # Misol uchun DM xabarlar
+    if "entry" in data:
+        for entry in data["entry"]:
+            if "messaging" in entry:
+                for msg in entry["messaging"]:
+                    print("Message:", msg)
+
+    return "EVENT_RECEIVED", 200
+
+
+if __name__ == "__main__":
+    app.run(port=5000, debug=True)
