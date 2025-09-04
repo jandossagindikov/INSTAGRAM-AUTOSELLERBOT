@@ -30,13 +30,13 @@ products = [
         "image_url": "https://images.uzum.uz/cs20qjksslojjk5rogcg/original.jpg",
         "title": "Elektr idish yuvish cho'tkasi"
         # 2025.09.3  
-    }#,
-    # {
-    #     "media_id": "18089648455759759",
-    #     "media_url": "https://www.instagram.com/reel/DN06BxJwJnV/",
-    #     "buy_link": "https://uzum.uz/product/1884673?utm_source=sharing&utm_medium=product_page_android&utm_campaign=native",
-    #     "image_url": "https://images.uzum.uz/d2dp9o34eu2mnqe5hm70/original.jpg",
-    #     "title": "Sabzavot tozalag'ich"
-    #     # 2025.09.2  
-    # }
+    },
+    {
+        "media_id": "17969407511952944",#<-ertaga id qoyaish kk
+        "media_url": "https://www.instagram.com/p/DOK-VEJCjTy/",  #<-- instagramga joylagan narsa qoyish kerak
+        "buy_link": "https://uzum.uz/product/1739990?utm_source=sharing&utm_medium=product_page_android&utm_campaign=native",
+        "image_url": "https://images.uzum.uz/d0srvl33uvph50a0ielg/original.jpg",
+        "title": "Sovun pufakchalari generatori dinozavr shaklida"
+        # 2025.09.4  
+    }
 ]
