@@ -38,5 +38,13 @@ products = [
         "image_url": "https://images.uzum.uz/d0srvl33uvph50a0ielg/original.jpg",
         "title": "Sovun pufakchalari generatori dinozavr shaklida"
         # 2025.09.4  
+    },
+    {
+        "media_id": "17894212320297565",
+        "media_url": "https://www.instagram.com/p/DOJSNI2iiL4/",
+        "buy_link": "https://uzum.uz/product/1222343?utm_source=sharing&utm_medium=product_page_android&utm_campaign=native",
+        "image_url": "https://images.uzum.uz/crc8mem0t1lqb8aq6aj0/original.jpg",
+        "title": "G'ilof URR Smart Cover Corning"
+        # 2025.09.6 
     }
 ]
