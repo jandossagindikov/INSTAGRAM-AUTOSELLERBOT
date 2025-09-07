@@ -46,5 +46,14 @@ products = [
         "image_url": "https://images.uzum.uz/crc8mem0t1lqb8aq6aj0/original.jpg",
         "title": "G'ilof URR Smart Cover Corning"
         # 2025.09.6 
+    },
+    {
+        "media_id": "18061937912064361",
+        "media_url": "https://www.instagram.com/p/DOSmlnlCk3D/",
+        "buy_link": "https://uzum.uz/product/1504386?utm_source=sharing&utm_medium=product_page_android&utm_campaign=native",
+        "image_url": "https://images.uzum.uz/cur1hh3vgbkm5ehfr7q0/original.jpg",
+        "title": "Professional akkumuliyatorli bog‘ sekatori"
+        # 2025.09.7
     }
 ]
+
