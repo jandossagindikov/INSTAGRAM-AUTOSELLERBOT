@@ -67,6 +67,16 @@ products = [
         "comments": ["+","++","+++","++++","+++++","++++++","+++++++","++++++++","+++++++++","++++++++++","+++++++++++","++++++++++++","+++++++++++++","++++++++++++++","+++++++++++++++","++++++++++++++++","+++++++++++++++++","++++++++++++++++++","+++++++++++++++++++"]
 
         # 2025.09.7
+    },
+    {
+        "media_id": "18076980251073300",
+        "media_url": "https://www.instagram.com/p/DOVsp4oCqnB/",
+        "buy_link": "https://uzum.uz/product/932719?utm_source=sharing&utm_medium=product_page_android&utm_campaign=native",
+        "image_url": "https://images.uzum.uz/co6j7iupom4ma10s9i9g/original.jpg",
+        "title": "Faralarning tiniqligini kimyoviy tiklash uchun bug'lantiruvchi choynak",
+        "comments": ["buy"]
+
+        # 2025.09.8
     }
 ]
 
