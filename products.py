@@ -77,6 +77,16 @@ products = [
         "comments": ["buy"]
 
         # 2025.09.8
+    },
+    {
+        "media_id": "17861902962469607",
+        "media_url": "https://www.instagram.com/p/DOYbxL8ihNa/",
+        "buy_link": "https://uzum.uz/product/1221080?utm_source=sharing&utm_medium=product_page_android&utm_campaign=native",
+        "image_url": "https://images.uzum.uz/d1pf3evnrkoeo1hk4920/original.jpg",
+        "title": "Qo‘l bug‘lagichi, kiyim va matolar uchun",
+        "comments": ["dazmol"]
+
+        # 2025.09.9
     }
 ]
 
